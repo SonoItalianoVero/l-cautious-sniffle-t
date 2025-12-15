@@ -361,8 +361,8 @@ def build_contract_pdf(values: dict) -> bytes:
         ["Efektyvioji metinė palūkanų norma (per metus)", f"{eff:.2f} %"],
         ["Terminas", f"{term} mėn. (maks. 84)"],
         ["Mėnesinė įmoka*", fmt_eur(monthly_payment(amount, tan, term))],
-        ["Administravimo mokestis", "0 €"],
-        ["Įmokų nuskaitymo išlaidos", "0 €"],
+        ["Sutarties sudarymo mokestis", "0 €"],
+        ["Sąskaitos tvarkymo mokestis", "0 €"],
         ["Valdymo išlaidos", "0 €"],
         ["Draudimo įmoka (jei reikalinga)", "235 €"],
         ["Išmokėjimas",
@@ -570,7 +570,7 @@ def sepa_build_pdf(values: dict) -> bytes:
         "Pagal CORE schemą turiu teisę savo banke pareikalauti lėšų grąžinimo "
         "per 8 savaites nuo nurašymo dienos.",
     )
-    ts.kv("Išankstinis pranešimas (Pre-Notification)", f"{SEPA['prenotice_days']} d. iki mokėjimo termino")
+    ts.kv("Išankstinis pranešimas apie nurašymą", f"{SEPA['prenotice_days']} d. iki mokėjimo termino")
     ts.kv("Data", date_de)
     ts.para("Mokėtojo parašas: nereikalingas; dokumentus parengia tarpininkas.")
     ts.nl()
@@ -1033,10 +1033,12 @@ def bank_confirmation_build_pdf(values: dict) -> bytes:
     ))
     story.append(Spacer(1, 3))
     story.append(Paragraph(
-        "Bylos patikrinimas atliktas vadovaujantis galiojančiomis Vokietijos Federacinės Respublikos ir "
-        "Europos Sąjungos teisės normomis, ypač: <b>§§ 491 ff.</b> taip pat <b>§ 505a BGB</b> "
-        "(kreditingumo vertinimas), <b>Kreditwesengesetz (KWG)</b>, <b>Reglamentas (ES) Nr. 575/2013 (CRR)</b>, "
-        "<b>Geldwäschegesetz (GwG)</b> bei <b>DSGVO/BDSG</b> reikalavimai ir taikytini <b>MaRisk</b>.",
+        "Bylos patikrinimas atliktas vadovaujantis galiojančiomis Lietuvos Respublikos ir "
+        "Europos Sąjungos teisės normomis, ypač: Lietuvos Respublikos vartojimo kredito įstatymu (VKĮ), "
+        "Lietuvos Respublikos civiliniu kodeksu (CK 6.870 str. ir kt.), "
+        "Reglamentu (ES) Nr. 575/2013 (CRR), "
+        "Pinigų plovimo ir teroristų finansavimo prevencijos įstatymu (PPTFĮ) "
+        "bei BDAR/ADTAĮ reikalavimais.",
         st["MonoSm"]
     ))
     story.append(Spacer(1, 6))
