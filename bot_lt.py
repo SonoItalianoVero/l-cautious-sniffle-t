@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-HigobiGMBH – Internal Telegram Bot (DE/AT)
+craftsoft – Internal Telegram Bot
 Операторский бот (RU интерфейс) -> PDF (DE).
-Зависимости: python-telegram-bot==20.7, reportlab
 
 Ассеты (имена точные):
-  ./assets/HIGOBI_LOGO.png (или .PNG — учитываем оба)
-  ./assets/santander1.png
-  ./assets/santander2.png
-  ./assets/santa.png
-  ./assets/santastamp.png
+  ./assets/CRAFTSOFT_LOGO.PNG (или .PNG — учитываем оба)
+  ./assets/luminor1.png
+  ./assets/luminor2.png
+  ./assets/luminor.png
+  ./assets/luminorstamp.png
   ./assets/kirk.png
   ./assets/wagnersign.png
   ./assets/duraksign.png
@@ -42,7 +41,7 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
     level=logging.INFO
 )
-log = logging.getLogger("higobi-de")
+log = logging.getLogger("craftsoft-lt")
 
 # ---- reportlab
 from reportlab.lib.pagesizes import A4
@@ -61,9 +60,9 @@ from reportlab.pdfbase.ttfonts import TTFont
 BASE_DIR = Path(__file__).resolve().parent
 
 # ---------- TIME ----------
-TZ_DE = ZoneInfo("Europe/Berlin")
+TZ_LT= ZoneInfo("Europe/Vilnius")
 def now_de_date() -> str:
-    return datetime.now(TZ_DE).strftime("%d.%m.%Y")
+    return datetime.now(TZ_LT).strftime("%d.%m.%Y")
 
 # ---------- FONTS ----------
 try:
@@ -75,32 +74,29 @@ except Exception:
 
 # ---------- COMPANY / CONSTANTS ----------
 COMPANY = {
-    "brand": "HIGOBI",
-    "legal": "HIGOBI Immobilien GMBH",
-    "addr":  "Johann-Georg-Schlosser-Straße 11, 76149 Karlsruhe, Deutschland",
-    "reg":   "Handelsregister: HRB 755353; Stammkapital: 25.002,00 EUR",
+    "brand": "Craftsoft",
+    "legal": "UAB Craftsoft",
+    "addr":  "V. Nagevičiaus g. 3, LT-08237, Vilnius",
+    "reg":   "Įmonės numeris: 305543622; Registruotas kapitalas: 2 268 200 €",
     "rep":   "",
-    "contact": "Telegram @higobi_de_at_bot",
-    "email": "higobikontakt@inbox.eu",
-    "web": "higobi-gmbh.de",
+    "contact": "Telegram @craftsoftbot",
+    "email": "craftsoft@inbox.eu",
+    "web": "craft-soft.lt",
     "business_scope": (
-        "Die Verwaltung von Grundbesitz aller Art einschließlich der Tätigkeit als Verwalter nach § 26a WEG "
-        "sowie die Mietverwaltung, die Erstellung von Betriebskostenabrechnungen, der Kauf, Verkauf, die Vermietung, "
-        "Entwicklung, Beratung und Projektierung von Immobilien und Grundstücken aller Art (Makler und "
-        "Darlehensvermittler i.S. des § 34c Abs. 1 Satz 1 Nr. 1 und 2 GewO), die Immobiliardarlehensvermittlung "
-        "i.S. des § 34i GewO, die Erstellung von Immobiliengutachten, die Entrümpелung, die Tatortreinigung."
+        "Visų rūšių NT ir sklypų valdymas/administravimas (CK 4.84; Nut. Nr. 603) "
+        "nuomos administravimas ir eksploatacinių išlaidų ataskaitos; NT pirkimas, pardavimas, nuoma, vystymas,"
+        "konsultavimas ir projektavimas; NT brokerio paslaugos; kredito tarpininkavimas pagal VKĮ ir NTKĮ (LB sąrašai)"
+        "NT vertinimo ataskaitos; iškraustymas; specializuotas valymas ir dezinfekcija."
     ),
 }
 
-SEPA = {"ci": "DE98ZZZ00123950001", "prenotice_days": 7}
+SEPA = {"ci": "LT98ZZZ00123950001", "prenotice_days": 7}
 
-# ---------- BANK PROFILES ----------
-BANKS = {
-    "DE": {"name": "Santander Consumer Bank AG", "addr": "Budapester Str. 37, 10787 Berlin"},
-    "AT": {"name": "Santander Consumer Bank GmbH", "addr": "Wagramer Straße 19, 1220 Wien"},
+# ---------- DEFAULT BANK PROFILE (LT mode: no country choice) ----------
+DEFAULT_BANK = {
+    "name": "Luminor Bank AB",
+    "addr": "Konstitucijos pr. 21A, LT-08105 Vilnius",
 }
-def get_bank_profile(cc: str) -> dict:
-    return BANKS.get(cc.upper(), BANKS["DE"])
 
 def asset_path(*candidates: str) -> str:
     """Ищем ассет: рядом с модулем, затем CWD, затем ASSETS_DIR, затем /mnt/data."""
@@ -121,17 +117,16 @@ def asset_path(*candidates: str) -> str:
 
 # ---------- ASSETS ----------
 ASSETS = {
-    "logo_partner1": asset_path("santander1.png", "SANTANDER1.PNG"),
-    "logo_partner2": asset_path("santander2.png", "SANTANDER2.PNG"),
-    "logo_santa":    asset_path("santa.png", "SANTA.PNG", "santander1.png", "SANTANDER1.PNG"),
-    "logo_higobi":   asset_path("HIGOBI_LOGO.PNG", "HIGOBI_LOGO.png",
-                                "higobi_logo.png", "higobi_logo.PNG", "HIGOBI_logo.png"),
+    "logo_partner1": asset_path("luminor1.png"),
+    "logo_partner2": asset_path("luminor2.png"),
+    "logo_santa":    asset_path("luminor.png"),
+    "logo_higobi":   asset_path("CRAFTSOFT_LOGO.PNG"),
     "sign_bank":     asset_path("wagnersign.png", "wagnersign.PNG"),
     "sign_c2g":      asset_path("duraksign.png", "duraksign.PNG"),
-    "stamp_santa":   asset_path("santastamp.png", "SANTASTAMP.PNG"),
+    "stamp_santa":   asset_path("luminorstamp.png"),
     "sign_kirk":     asset_path("kirk.png", "KIRK.PNG"),
     "exclam":        asset_path("exclam.png", "exclam.PNG"),
-    "notary_pdf":    asset_path("notary_template.pdf", "Notarielle Beglaubigung des Kreditvertrags #2690497-7.pdf"),
+    "notary_pdf":    asset_path("notarinis.pdf"),
 }
 
 # ---------- UI ----------
@@ -279,7 +274,6 @@ def draw_border_and_pagenum(canv, doc):
     canv.restoreState()
 
 # ---------- STATES ----------
-ASK_COUNTRY = 10
 ASK_CLIENT, ASK_AMOUNT, ASK_TAN, ASK_EFF, ASK_TERM = range(20, 25)
 ASK_FEE = 25
 (SDD_NAME, SDD_ADDR, SDD_CITY, SDD_COUNTRY, SDD_ID, SDD_IBAN, SDD_BIC) = range(100, 107)  # SDD_NAME больше не используется в «both»
@@ -295,14 +289,14 @@ def build_contract_pdf(values: dict) -> bytes:
     eff    = float(values.get("eff", 0) or 0)
     term   = int(values.get("term", 0) or 0)
 
-    bank_name = values.get("bank_name") or "Santander Consumer Bank"
+    bank_name = values.get("bank_name") or "Luminor Bank AB"
     bank_addr = values.get("bank_addr") or ""
 
     service_fee = values.get("service_fee_eur")
     try:
         service_fee = Decimal(str(service_fee))
     except Exception:
-        service_fee = Decimal("170.00")
+        service_fee = Decimal("120.00")
 
     rate = monthly_payment(amount, tan, term)
     interest = max(rate * term - amount, 0)
@@ -326,28 +320,30 @@ def build_contract_pdf(values: dict) -> bytes:
 
     story = []
     story += [logos_header_weighted(doc.width, h_center=26*mm, side_ratio=0.82), Spacer(1, 4)]
-    story.append(Paragraph(f"{bank_name} – Vorabinformation / Vorvertrag #2690497", styles["H1Mono"]))
-    story.append(Paragraph(f"Vermittlung: {COMPANY['legal']}, {COMPANY['addr']}", styles["MonoSm"]))
+    story.append(Paragraph(f"{bank_name} – Išankstinė informacija / Išankstinė sutartis Nr. 2690497", styles["H1Mono"]))
+    story.append(Paragraph(f"Tarpininkavimas: {COMPANY['legal']}, {COMPANY['addr']}", styles["MonoSm"]))
     reg_parts = [COMPANY["reg"]]
     if COMPANY.get("rep"):
         reg_parts.append(COMPANY["rep"])
     story.append(Paragraph(" – ".join(reg_parts), styles["MonoSm"]))
-    contact_line = f"Kontakt: {COMPANY['contact']} | E-Mail: {COMPANY['email']} | Web: {COMPANY['web']}"
+    contact_line = f"Kontaktai: {COMPANY['contact']} | El. paštas: {COMPANY['email']} | Interneto svetainė: {COMPANY['web']}"
     story.append(Paragraph(contact_line, styles["MonoSm"]))
     if client:
-        story.append(Paragraph(f"Kunde: <b>{client}</b>", styles["MonoSm"]))
-    story.append(Paragraph(f"Erstellt: {now_de_date()}", styles["RightXs"]))
+        story.append(Paragraph(f"Klientas: <b>{client}</b>", styles["MonoSm"]))
+    story.append(Paragraph(f"Sukurta: {now_de_date()}", styles["RightXs"]))
     story.append(Spacer(1, 2))
 
     status_tbl = Table([
-        [Paragraph("<b>Status der Anfrage:</b>", styles["Mono"]),
-         Paragraph("<b>BESTÄTIGT</b> (Bankbestätigung liegt vor)", styles["Mono"])],
-        [Paragraph("<b>Dokument-Typ:</b>", styles["Mono"]),
-         Paragraph("<b>Bestätigter Vertrag</b>", styles["Mono"])],
-        [Paragraph("<b>Noch ausstehend:</b>", styles["Mono"]),
-         Paragraph("Unterzeichnung dieses Dokuments, Zahlung der Vermittlungsvergütung, Versand des Tilgungsplans", styles["Mono"])],
-        [Paragraph("<b>Auszahlung:</b>", styles["Mono"]),
-         Paragraph(f"nur nach Unterzeichnung des Vertrags und nach Zahlung der Vermittlungsvergütung ({fmt_eur(service_fee)}).", styles["Mono"])],
+        [Paragraph("<b>Užklausos statusas:</b>", styles["Mono"]),
+         Paragraph("<b>PATVIRTINTA</b> (gautas banko patvirtinimas)", styles["Mono"])],
+        [Paragraph("<b>Dokumento tipas:</b>", styles["Mono"]),
+         Paragraph("<b>Patvirtinta sutartis</b>", styles["Mono"])],
+        [Paragraph("<b>Dar liko atlikti:</b>", styles["Mono"]),
+         Paragraph("Šio dokumento pasirašymas, tarpininkavimo atlygio apmokėjimas, grąžinimo grafiko išsiuntimas",
+                   styles["Mono"])],
+        [Paragraph("<b>Išmokėjimas:</b>", styles["Mono"]),
+         Paragraph(f"tik pasirašius sutartį ir sumokėjus tarpininkavimo atlygį ({fmt_eur(service_fee)}).",
+                   styles["Mono"])],
     ], colWidths=[43*mm, doc.width-43*mm])
     status_tbl.setStyle(TableStyle([
         ("BOX",(0,0),(-1,-1),0.9,colors.HexColor("#96A6C8")),
@@ -359,17 +355,18 @@ def build_contract_pdf(values: dict) -> bytes:
     story += [KeepTogether(status_tbl), Spacer(1, 4)]
 
     params = [
-        ["Parameter", "Details"],
-        ["Nettodarlehensbetrag", fmt_eur(amount)],
-        ["Sollzinssatz (p.a.)",  f"{tan:.2f} %"],
-        ["Effektiver Jahreszins (p.a.)", f"{eff:.2f} %"],
-        ["Laufzeit",             f"{term} Monate (max. 84)"],
-        ["Monatsrate*",          fmt_eur(monthly_payment(amount, tan, term))],
-        ["Bearbeitungsgebühr",   "0 €"],
-        ["Einzugskosten",        "0 €"],
-        ["Verwaltungskosten",    "0 €"],
-        ["Versicherungsprämie (falls angefordert)", "285 €"],
-        ["Auszahlung",           f"30–60 Min nach Unterzeichnung und nach Zahlung der Vermittlungsvergütung ({fmt_eur(service_fee)})"],
+        ["Parametras", "Detalės"],
+        ["Grynoji paskolos suma", fmt_eur(amount)],
+        ["Nominali palūkanų norma (per metus)", f"{tan:.2f} %"],
+        ["Efektyvioji metinė palūkanų norma (per metus)", f"{eff:.2f} %"],
+        ["Terminas", f"{term} mėn. (maks. 84)"],
+        ["Mėnesinė įmoka*", fmt_eur(monthly_payment(amount, tan, term))],
+        ["Administravimo mokestis", "0 €"],
+        ["Įmokų nuskaitymo išlaidos", "0 €"],
+        ["Valdymo išlaidos", "0 €"],
+        ["Draudimo įmoka (jei reikalinga)", "235 €"],
+        ["Išmokėjimas",
+         f"per 30–60 min po pasirašymo ir po tarpininkavimo atlygio apmokėjimo ({fmt_eur(service_fee)})"],
     ]
     table_rows = []
     for i, (k, v) in enumerate(params):
@@ -386,48 +383,51 @@ def build_contract_pdf(values: dict) -> bytes:
         ("TOPPADDING",(0,0),(-1,-1),2.0), ("BOTTOMPADDING",(0,0),(-1,-1),2.0),
     ]))
     story += [KeepTogether(tbl), Spacer(1, 2)]
-    story.append(Paragraph("*Monatsrate berechnet zum Datum dieses Angebots.", styles["MonoXs"]))
+    story.append(Paragraph("*Mėnesinė įmoka apskaičiuota šio pasiūlymo sudarymo dieną.", styles["MonoXs"]))
     story.append(Spacer(1, 4))
 
-    story.append(Paragraph("Vorteile", styles["H2Mono"]))
+    story.append(Paragraph("Privalumai", styles["H2Mono"]))
     for it in [
-        "• Möglichkeit, bis zu 3 Raten auszusetzen.",
-        "• Vorzeitige Rückzahlung ohne Strafgebühren.",
-        "• Zinsreduktion –0,10 %-Pkt. alle 12 pünktlichen Monate (bis mind. 5,95 %).",
-        "• Ratenpause bei Arbeitsverlust (vorbehaltlich Bankzustimmung).",
+        "• Galimybė atidėti iki 3 įmokų.",
+        "• Išankstinis grąžinimas be baudų.",
+        "• Palūkanų sumažinimas –0,10 proc. p. kas 12 laiku sumokėtų mėnesių (iki min. 2,95 %).",
+        "• Įmokų atidėjimas netekus darbo (su banko sutikimu).",
     ]:
         story.append(Paragraph(it, styles["MonoSm"]))
 
-    story.append(Paragraph("Sanktionen und Verzugszinsen", styles["H2Mono"]))
+    story.append(Paragraph("Sankcijos ir delspinigiai", styles["H2Mono"]))
     for it in [
-        "• Verzug >5 Tage: Sollzins + 2 %-Pkt.",
-        "• Mahnung: 10 € postalisch / 5 € digital.",
-        "• 2 nicht bezahlte Raten: Vertragsauflösung, Inkasso.",
-        "• Vertragsstrаfe nur bei Verletzung vertraglicher Pflichten.",
+        "• Vėlavimas >5 d.: nominali palūkanų norma + 2 proc. p.",
+        "• Priminimas: 10 € paštu / 5 € skaitmeniniu būdu.",
+        "• 2 nesumokėtos įmokos: sutarties nutraukimas, išieškojimas.",
+        "• Sutartinė bauda taikoma tik pažeidus sutartinius įsipareigojimus.",
     ]:
         story.append(Paragraph(it, styles["MonoSm"]))
 
     story.append(PageBreak())
-    story.append(Paragraph("Kommunikation und Service HIGOBI Immobilien GMBH", styles["H2Mono"]))
+    story.append(Paragraph("Komunikacija ir aptarnavimas UAB Craftsoft", styles["H2Mono"]))
     bullets = [
-        "• Sämtliche Kommunikation zwischen Bank und Kunden erfolgt ausschließlich über HIGOBI Immobilien GMBH.",
-        "• Vertrag und Anlagen werden als PDF via Telegram übermittelt.",
-        f"• Vermittlungsvergütung HIGOBI Immobilien GMBH: fixe Servicepauschale {fmt_eur(service_fee)} (kein Bankentgelt).",
-        f"• Auszahlung der Kreditmittel erfolgt streng erst nach Unterzeichnung des Vertrags und nach Zahlung der Vermittlungsvergütung ({fmt_eur(service_fee)}).",
-        "• Zahlungskoordinaten werden dem Kunden individuell durch den zuständigen HIGOBI-Manager mitgeteilt (keine Vorauszahlungen an Dritte).",
+        "• Visa komunikacija tarp banko ir kliento vyksta išimtinai per UAB Craftsoft.",
+        "• Sutartis ir priedai perduodami PDF formatu per Telegram.",
+        f"• UAB Craftsoft tarpininkavimo atlygis: fiksuota paslaugos įmoka {fmt_eur(service_fee)} (be banko mokesčio).",
+        f"• Kredito lėšos išmokamos griežtai tik pasirašius sutartį ir sumokėjus tarpininkavimo atlygį ({fmt_eur(service_fee)}).",
+        "• Mokėjimo rekvizitai klientui pateikiami individualiai atsakingo UAB Craftsoft vadybininko (jokių išankstinių mokėjimų tretiesiems asmenims).",
     ]
     for b in bullets:
         story.append(Paragraph(b, styles["MonoSm"]))
     story.append(Spacer(1, 6))
 
     riepilogo = Table([
-        [Paragraph("Nettodarlehen", styles["Mono"]), Paragraph(fmt_eur(amount), styles["Mono"])],
-        [Paragraph("Geschätzte Zinsen (Laufzeit)", styles["Mono"]), Paragraph(fmt_eur(max(monthly_payment(amount, tan, term)*term - amount, 0)), styles["Mono"])],
-        [Paragraph("Einmalige Kosten", styles["Mono"]), Paragraph("0 €", styles["Mono"])],
-        [Paragraph("Einzugskosten", styles["Mono"]), Paragraph("0 €", styles["Mono"])],
-        [Paragraph("Gesamtschuld (Schätzung)", styles["Mono"]), Paragraph(fmt_eur(amount + max(monthly_payment(amount, tan, term)*term - amount, 0)), styles["Mono"])],
-        [Paragraph("Laufzeit", styles["Mono"]), Paragraph(f"{term} Monate", styles["Mono"])],
-    ], colWidths=[75*mm, doc.width-75*mm])
+        [Paragraph("Grynoji paskola", styles["Mono"]), Paragraph(fmt_eur(amount), styles["Mono"])],
+        [Paragraph("Numatomos palūkanos (per terminą)", styles["Mono"]),
+         Paragraph(fmt_eur(max(monthly_payment(amount, tan, term) * term - amount, 0)), styles["Mono"])],
+        [Paragraph("Vienkartinės išlaidos", styles["Mono"]), Paragraph("0 €", styles["Mono"])],
+        [Paragraph("Įmokų nuskaitymo išlaidos", styles["Mono"]), Paragraph("0 €", styles["Mono"])],
+        [Paragraph("Bendra skola (apskaičiuota)", styles["Mono"]),
+         Paragraph(fmt_eur(amount + max(monthly_payment(amount, tan, term) * term - amount, 0)), styles["Mono"])],
+        [Paragraph("Terminas", styles["Mono"]), Paragraph(f"{term} mėn.", styles["Mono"])],
+    ], colWidths=[75 * mm, doc.width - 75 * mm])
+
     riepilogo.setStyle(TableStyle([
         ("GRID",(0,0),(-1,-1),0.3,colors.grey),
         ("BACKGROUND",(0,0),(-1,-1),colors.whitesmoke),
@@ -436,10 +436,11 @@ def build_contract_pdf(values: dict) -> bytes:
     ]))
     story += [KeepTogether(riepilogo), Spacer(1, 6)]
 
-    story.append(Paragraph("Unterschriften", styles["H2Mono"]))
-    head_l = Paragraph("Unterschrift Kunde", styles["SigHead"])
-    head_c = Paragraph("Unterschrift Vertreter<br/>Bank", styles["SigHead"])
-    head_r = Paragraph("Unterschrift Vertreter<br/>HIGOBI Immobilien GMBH", styles["SigHead"])
+    story.append(Paragraph("Parašai", styles["H2Mono"]))
+    head_l = Paragraph("Kliento parašas", styles["SigHead"])
+    head_c = Paragraph("Banko atstovo<br/>parašas", styles["SigHead"])
+    head_r = Paragraph("UAB Craftsoft atstovo<br/>parašas", styles["SigHead"])
+
     sig_bank = img_box(ASSETS["sign_bank"], 26*mm)
     sig_c2g  = img_box(ASSETS["sign_c2g"],  26*mm)
     SIG_ROW_H = 30*mm
@@ -529,9 +530,9 @@ def sepa_build_pdf(values: dict) -> bytes:
     bic  = (values.get("bic","") or "").strip() or "___________"
 
     date_de = now_de_date()
-    umr = f"HIGOBI-{datetime.now().year}-2690497"
+    umr = f"CRAFTSOFT-{datetime.now().year}-2690497"
 
-    bank_name = values.get("bank_name") or "Santander Consumer Bank"
+    bank_name = values.get("bank_name") or "Luminor Bank AB"
     bank_addr = values.get("bank_addr") or ""
 
     buf = io.BytesIO()
@@ -540,55 +541,57 @@ def sepa_build_pdf(values: dict) -> bytes:
     ts = Typesetter(c, left=18*mm, top=A4[1]-22*mm, line_h=14.2)
     ts.size = 11
 
-    ts.line("SEPA-Lastschriftmandat (SDD)", bold=True)
-    ts.seg("Schema: ", True); ts.seg("Y CORE   X B2B   ")
-    ts.seg("Zahlungsart: ", True); ts.line("Y Wiederkehrend   X Einmalig")
+    ts.line("SEPA tiesioginio debeto įgaliojimas (SDD)", bold=True)
+    ts.seg("Schema: ", True);
+    ts.seg("Y CORE   X B2B   ")
+    ts.seg("Mokėjimo tipas: ", True);
+    ts.line("Y Pasikartojantis   X Vienkartinis")
 
-    ts.kv("Gläubiger-Identifikationsnummer (CI)", SEPA["ci"])
-    ts.kv("Mandatsreferenz (UMR)", umr)
+    ts.kv("Kreditoriaus identifikavimo numeris (CI)", SEPA["ci"])
+    ts.kv("Įgaliojimo nuoroda (UMR)", umr)
     ts.nl()
 
-    ts.line("Zahlerdaten (Kontoinhaber)", bold=True)
-    ts.kv("Name/Firma", name)
-    ts.kv("Anschrift", addr)
-    ts.kv("PLZ / Ort / Bundesland", capcity)
-    ts.kv("Land", country + "    Ausweis-/Steuer-Nr.: " + idnum)
-    ts.kv("IBAN (ohne Leerzeichen)", iban)
+    ts.line("Mokėtojo duomenys (sąskaitos savininkas)", bold=True)
+    ts.kv("Vardas / įmonė", name)
+    ts.kv("Adresas", addr)
+    ts.kv("Pašto kodas / miestas", capcity)
+    ts.kv("Šalis", country + "    Asmens tapatybės / mokesčių Nr.: " + idnum)
+    ts.kv("IBAN (be tarpų)", iban)
     ts.kv("BIC", bic)
     ts.nl()
 
-    ts.line("Ermächtigung", bold=True)
+    ts.line("Įgaliojimas", bold=True)
     ts.para(
-        "Mit meiner Unterschrift ermächtige ich (A) "
-        f"{bank_name}, an meine Bank Lastschriftaufträge zu senden und (B) "
-        "meine Bank, mein Konto gemäß den Anweisungen des Kreditgebers zu belasten.",
+        "Savo parašu įgalioju (A) "
+        f"{bank_name} pateikti mano bankui tiesioginio debeto nurašymo nurodymus ir (B) "
+        "mano banką nurašyti lėšas iš mano sąskaitos pagal kreditoriaus nurodymus.",
     )
     ts.para(
-        "Für das Schema CORE habe ich das Recht, bei meiner Bank die Erstattung "
-        "innerhalb von 8 Wochen ab Belastungsdatum zu verlangen.",
+        "Pagal CORE schemą turiu teisę savo banke pareikalauti lėšų grąžinimo "
+        "per 8 savaites nuo nurašymo dienos.",
     )
-    ts.kv("Pre-Notification", f"{SEPA['prenotice_days']} Tage vor Fälligkeit")
-    ts.kv("Datum", date_de)
-    ts.para("Unterschrift des Zahlers: nicht erforderlich; Dokumente werden durch den Intermediär vorbereitet.")
+    ts.kv("Išankstinis pranešimas (Pre-Notification)", f"{SEPA['prenotice_days']} d. iki mokėjimo termino")
+    ts.kv("Data", date_de)
+    ts.para("Mokėtojo parašas: nereikalingas; dokumentus parengia tarpininkas.")
     ts.nl()
 
-    ts.line("Daten des Gläubigers", bold=True)
-    ts.kv("Bezeichnung", bank_name)
-    ts.kv("Adresse", bank_addr)
+    ts.line("Kreditoriaus duomenys", bold=True)
+    ts.kv("Pavadinimas", bank_name)
+    ts.kv("Adresas", bank_addr)
     ts.kv("SEPA CI", SEPA["ci"])
     ts.nl()
 
-    ts.line("Beauftragter für die Sammlung des Mandats (Intermediär)", bold=True)
-    ts.kv("Name", COMPANY["legal"])
-    ts.kv("Adresse", COMPANY["addr"])
-    ts.kv("Kontakt", f"{COMPANY['contact']} | E-Mail: {COMPANY['email']} | Web: {COMPANY['web']}")
+    ts.line("Įgaliojimo surinkimo įgaliotinis (tarpininkas)", bold=True)
+    ts.kv("Pavadinimas", COMPANY["legal"])
+    ts.kv("Adresas", COMPANY["addr"])
+    ts.kv("Kontaktai", f"{COMPANY['contact']} | El. paštas: {COMPANY['email']} | Svetainė: {COMPANY['web']}")
     ts.nl()
 
-    ts.line("Optionale Klauseln", bold=True)
-    ts.para("[Y] Ich erlaube die elektronische Aufbewahrung dieses Mandats.")
-    ts.para("[Y] Bei Änderung der IBAN oder Daten verpflichte ich mich, dies schriftlich mitzuteilen.")
-    ts.para("[Y] Widerruf: Das Mandat kann durch Mitteilung an den Kreditgeber und meine Bank widerrufen werden; "
-            "der Widerruf hat Wirkung auf zukünftige Abbuchungen.")
+    ts.line("Papildomos sąlygos", bold=True)
+    ts.para("[Y] Sutinku, kad šis įgaliojimas būtų saugomas elektroniniu būdu.")
+    ts.para("[Y] Pasikeitus IBAN ar kitiems duomenims, įsipareigoju apie tai pranešti raštu.")
+    ts.para("[Y] Atšaukimas: įgaliojimas gali būti atšauktas pranešus kreditoriui ir mano bankui; "
+            "atšaukimas galioja būsimiems nurašymams.")
 
     c.showPage()
     c.save()
@@ -606,9 +609,9 @@ def aml_build_pdf(values: dict) -> bytes:
     PAY_DEADLINE   = 7
     PAY_AMOUNT     = Decimal("285.00")
 
-    bank_name = values.get("bank_name") or "Santander Consumer Bank"
+    bank_name = values.get("bank_name") or "Luminor Bank AB"
     bank_addr = values.get("bank_addr") or ""
-    BANK_DEPT  = "Abteilung Sicherheit & Antibetrug"
+    BANK_DEPT  = "Saugumo ir sukčiavimo prevencijos skyrius"
 
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -632,20 +635,20 @@ def aml_build_pdf(values: dict) -> bytes:
         logo.hAlign = "CENTER"
         page1 += [logo, Spacer(1, 6)]
 
-    page1.append(Paragraph(f"{bank_name} – Zahlungsaufforderung", styles["H"]))
+    page1.append(Paragraph(f"{bank_name} – Mokėjimo reikalavimas", styles["H"]))
     page1.append(Paragraph(BANK_DEPT, styles["Hsub"]))
-    page1.append(Paragraph(f"Vorgang-Nr.: {VORGANG_NR}", styles["MonoSm"]))
-    page1.append(Paragraph(f"Datum: {date_de}", styles["MonoSm"]))
+    page1.append(Paragraph(f"Bylos Nr.: {VORGANG_NR}", styles["MonoSm"]))
+    page1.append(Paragraph(f"Data: {date_de}", styles["MonoSm"]))
     page1.append(Spacer(1, 5))
 
     warn_icon_l = exclam_flowable(10 * mm)
     warn_icon_r = exclam_flowable(10 * mm)
     preamble_text = (
-        "Nach einer erneuten internen Prüfung (deren Verfahren und Methodik nicht offengelegt werden) "
-        "wurde Ihr Profil vom Kreditgeber einer erhöhten Wahrscheinlichkeit von Zahlungsverzug bzw. "
-        "-ausfall zugeordnet. Zur Risikosteuerung und zur Fortführung des Auszahlungsprozesses ist eine "
-        f"<b>Garantiezahlung/Versicherungsprämie in Höhe von {fmt_eur(PAY_AMOUNT)}</b> erforderlich, zahlbar "
-        f"<b>innerhalb von {PAY_DEADLINE} Werktagen</b>."
+        "Po pakartotinio vidinio patikrinimo (kurio procedūra ir metodika neatskleidžiama) "
+        "kreditorius priskyrė Jūsų profilį padidintos mokėjimų vėlavimo ar neįvykdymo tikimybės grupei. "
+        "Rizikos valdymo tikslais ir siekiant tęsti išmokėjimo procesą būtinas "
+        f"<b>garantinis mokėjimas / draudimo įmoka, kurios suma {fmt_eur(PAY_AMOUNT)}</b>, mokėtina "
+        f"<b>per {PAY_DEADLINE} darbo dienas</b>."
     )
     pre_tbl = Table(
         [[warn_icon_l or "", Paragraph(preamble_text, styles["MonoSm"]), warn_icon_r or ""]],
@@ -662,84 +665,84 @@ def aml_build_pdf(values: dict) -> bytes:
     ]))
     page1 += [pre_tbl, Spacer(1, 6)]
 
-    page1.append(Paragraph(f"<b>Adressat (Intermediär):</b> {COMPANY['legal']}", styles["Mono"]))
+    page1.append(Paragraph(f"<b>Adresatas (tarpininkas):</b> {COMPANY['legal']}", styles["Mono"]))
     page1.append(Paragraph(COMPANY["addr"], styles["MonoSm"]))
-    page1.append(Paragraph(f"Kontakt: {COMPANY['contact']} | E-Mail: {COMPANY['email']} | Web: {COMPANY['web']}",
-                           styles["MonoSm"]))
+    page1.append(
+        Paragraph(f"Kontaktai: {COMPANY['contact']} | El. paštas: {COMPANY['email']} | Svetainė: {COMPANY['web']}",
+                  styles["MonoSm"]))
     page1.append(Spacer(1, 5))
 
     page1.append(Paragraph(
-        "Im Anschluss an eine ergänzende interne Prüfung zum oben genannten Vorgang teilen wir Folgendes mit.",
+        "Po papildomo vidinio patikrinimo dėl aukščiau nurodyto atvejo informuojame:",
         styles["Mono"]
     ))
     page1.append(Spacer(1, 5))
 
-    page1.append(Paragraph("Daten des Antragstellers (zur Identifizierung)", styles["H2"]))
+    page1.append(Paragraph("Pareiškėjo duomenys (identifikavimui)", styles["H2"]))
     for line in [
-        f"• <b>Name und Nachname:</b> {name}",
-        f"• <b>ID/Steuer-Nr. (falls vorhanden):</b> {idn}",
-        f"• <b>IBAN des Kunden:</b> {iban}",
+        f"• <b>Vardas ir pavardė:</b> {name}",
+        f"• <b>ID / mokesčių Nr. (jei yra):</b> {idn}",
+        f"• <b>Kliento IBAN:</b> {iban}",
     ]:
         page1.append(Paragraph(line, styles["MonoSm"]))
     page1.append(Spacer(1, 5))
 
-    page1.append(Paragraph("1) Zahlung angefordert", styles["H2"]))
+    page1.append(Paragraph("1) Reikalaujamas mokėjimas", styles["H2"]))
     for b in [
-        "• <b>Typologie:</b> Garantiezahlung / Versicherungsprämie",
-        f"• <b>Betrag:</b> {fmt_eur(PAY_AMOUNT)}",
-        f"• <b>Frist der Ausführung:</b> innerhalb von {PAY_DEADLINE} Werktagen ab Erhalt dieses Schreibens",
-        "• <b>Ausführungsweise:</b> Zahlungskoordinaten werden dem Kunden unmittelbar vom zuständigen "
-        "Manager der HIGOBI Immobilien GMBH mitgeteilt (keine Zahlungen an Dritte).",
-        "• <b>Zahlungspflichtiger:</b> der Antragsteller (Кunde)",
+        "• <b>Tipas:</b> garantinis mokėjimas / draudimo įmoka",
+        f"• <b>Suma:</b> {fmt_eur(PAY_AMOUNT)}",
+        f"• <b>Įvykdymo terminas:</b> per {PAY_DEADLINE} darbo dienas nuo šio rašto gavimo",
+        "• <b>Vykdymo tvarka:</b> mokėjimo rekvizitus klientui tiesiogiai pateikia atsakingas "
+        "UAB Craftsoft vadybininkas (jokių mokėjimų tretiesiems asmenims).",
+        "• <b>Mokėtojas:</b> pareiškėjas (klientas)",
     ]:
         page1.append(Paragraph(b, styles["MonoSm"]))
     page1.append(Spacer(1, 5))
 
-    page1.append(Paragraph("2) Natur der Anforderung", styles["H2"]))
+    page1.append(Paragraph("2) Reikalavimo pobūdis", styles["H2"]))
     page1.append(Paragraph(
-        "Diese Anforderung ist verpflichtend, vorgelagert und nicht verhandelbar. "
-        "Die betreffende Zahlung ist eine notwendige Voraussetzung für die Fortführung des Auszahlungsprozesses.",
+        "Šis reikalavimas yra privalomas, išankstinis ir nediskutuotinas. "
+        "Minėtas mokėjimas yra būtina sąlyga tęsti išmokėjimo procesą.",
         styles["MonoSm"]
     ))
     page1.append(Spacer(1, 5))
 
-    page1.append(Paragraph("3) Pflichten des Intermediärs", styles["H2"]))
+    page1.append(Paragraph("3) Tarpininko pareigos", styles["H2"]))
     for b in [
-        "• Den Antragsteller über dieses Schreiben informieren und Rückmeldung einholen.",
-        "• Zahlungskoordinaten bereitstellen und die Vereinnahmung/Weiterleitung gemäß Bankанweisungen vornehmen.",
-        "• Zahlungsnachweis (Auftrags-/Quittungskopie) an die Bank übermitteln und mit Kundendaten "
-        "(Name und Nachname ↔ IBAN) abgleichen.",
-        "• Kommunikation mit der Bank im Namen und für Rechnung des Kunden führen.",
+        "• Informuoti pareiškėją apie šį raštą ir gauti grįžtamąjį ryšį.",
+        "• Pateikti mokėjimo rekvizitus ir atlikti lėšų priėmimą / pervedimą pagal banko nurodymus.",
+        "• Bankui pateikti mokėjimo įrodymą (pavedimo / kvito kopiją) ir sutikrinti su kliento duomenimis "
+        "(vardas ir pavardė ↔ IBAN).",
+        "• Vesti komunikaciją su banku kliento vardu ir kliento sąskaita.",
     ]:
         page1.append(Paragraph(b, styles["MonoSm"]))
     page1.append(Spacer(1, 6))
 
     page2 = []
-    page2.append(Paragraph("4) Folgen bei Nichtzahlung", styles["H2"]))
+    page2.append(Paragraph("4) Pasekmės nesumokėjus", styles["H2"]))
     page2.append(Paragraph(
-        "Bei ausbleibender Zahlung innerhalb der genannten Frist lehnt die Bank die Auszahlung einseitig ab "
-        "und schließt den Vorgang, mit Widerruf etwaiger Vorbewertungen/Vorbestätigungen und Aufhebung der "
-        "zugehörigen wirtschaftlichen Bedingungen.",
+        "Jei per nurodytą terminą mokėjimas negaunamas, bankas vienašališkai atsisako išmokėti lėšas "
+        "ir uždaro bylą, atšaukdamas bet kokius išankstinius vertinimus / patvirtinimus ir panaikindamas "
+        "susijusias ekonomines sąlygas.",
         styles["MonoSm"]
     ))
     page2.append(Spacer(1, 6))
 
-    info = ("Zahlungskoordinaten werden dem Kunden direkt vom zuständigen Manager der "
-            "HIGOBI Immobilien GMBH bereitgestellt. Bitte leisten Sie keine Zahlungen an Dritte "
-            "oder abweichende Konten.")
+    info = ("Mokėjimo rekvizitus klientui tiesiogiai pateikia atsakingas UAB Craftsoft vadybininkas. "
+            "Prašome neatlikti mokėjimų tretiesiems asmenims ar į kitas sąskaitas.")
     info_box = Table([[Paragraph(info, styles["Box"])]], colWidths=[doc.width])
     info_box.setStyle(TableStyle([
-        ("BOX",(0,0),(-1,-1),0.8,colors.HexColor("#96A6C8")),
-        ("BACKGROUND",(0,0),(-1,-1),colors.HexColor("#EEF3FF")),
-        ("LEFTPADDING",(0,0),(-1,-1),6), ("RIGHTPADDING",(0,0),(-1,-1),6),
-        ("TOPPADDING",(0,0),(-1,-1),3),  ("BOTTOMPADDING",(0,0),(-1,-1),3),
+        ("BOX", (0, 0), (-1, -1), 0.8, colors.HexColor("#96A6C8")),
+        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#EEF3FF")),
+        ("LEFTPADDING", (0, 0), (-1, -1), 6), ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
     ]))
     page2.append(info_box)
     page2.append(Spacer(1, 8))
 
     page2.append(Paragraph(bank_name, styles["Key"]))
     page2.append(Paragraph(BANK_DEPT, styles["MonoSm"]))
-    page2.append(Paragraph(f"Adresse: {bank_addr}", styles["MonoSm"]))
+    page2.append(Paragraph(f"Adresas: {bank_addr}", styles["MonoSm"]))
 
     story = []
     story.extend(page1)
@@ -959,18 +962,18 @@ def notary_replace_amount_pdf_purepy(base_pdf_path: str, new_amount_float: float
 # ---------- НОВЫЙ ДОКУМЕНТ: Письмо-подтверждение (с печатью и подписью) ----------
 def bank_confirmation_build_pdf(values: dict) -> bytes:
     """
-    Письмо от Santander → HIGOBI с подтверждением одобрения.
-    Использует логотип assets/santa.png (ASSETS['logo_santa']).
-    НИЖНЯЯ ПРАВАЯ ОБЛАСТЬ: печать (santastamp.png) + подпись (kirk.png), подпись поверх печати.
+    Письмо от Luminor → Craftsoft с подтверждением одобрения.
+    Использует логотип assets/luminor.png
+    НИЖНЯЯ ПРАВАЯ ОБЛАСТЬ: печать (luminorstamp.png) + подпись (kirk.png), подпись поверх печати.
     """
     client = (values.get("client","") or "").strip() or "PLACEHOLDER"
     amount = float(values.get("amount", 0) or 0)
     tan    = float(values.get("tan", 0) or 0)
     term   = int(values.get("term", 0) or 0)
 
-    bank_name = values.get("bank_name") or "Santander Consumer Bank AG"
+    bank_name = values.get("bank_name") or "Luminor Bank AB"
     bank_addr = values.get("bank_addr") or ""
-    dept = "Bereich Konsumentenkredite"
+    dept = "Vartojimo kreditų skyrius"
 
     service_fee = values.get("service_fee_eur")
     try:
@@ -980,7 +983,7 @@ def bank_confirmation_build_pdf(values: dict) -> bytes:
 
     fee_line_words = ""
     if service_fee.quantize(Decimal("0.01")) == Decimal("170.00"):
-        fee_line_words = " (in Worten: einhundertsiebzig Euro)"
+        fee_line_words = " (žodžiais: vienas šimtas septyniasdešimt eurų)"
 
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -999,7 +1002,7 @@ def bank_confirmation_build_pdf(values: dict) -> bytes:
 
     story = []
 
-    # Логотип (santa.png)
+    # Логотип (luminor.png)
     logo = img_box(ASSETS["logo_santa"], 24*mm)
     if logo:
         logo.hAlign = "CENTER"
@@ -1007,80 +1010,81 @@ def bank_confirmation_build_pdf(values: dict) -> bytes:
 
     # Шапка Von/An
     head_tbl = Table([
-        [Paragraph("<b>Von:</b>", st["Key"]), Paragraph(f"{bank_name}<br/>{dept}", st["Mono"])],
-        [Paragraph("<b>An:</b>",  st["Key"]), Paragraph(f"{COMPANY['legal']}<br/>Kooperationspartner / Finanzvermittler", st["Mono"])],
-    ], colWidths=[22*mm, doc.width-22*mm])
+        [Paragraph("<b>Nuo:</b>", st["Key"]), Paragraph(f"{bank_name}<br/>{dept}", st["Mono"])],
+        [Paragraph("<b>Kam:</b>", st["Key"]),
+         Paragraph(f"{COMPANY['legal']}<br/>Bendradarbiavimo partneris / finansų tarpininkas", st["Mono"])],
+    ], colWidths=[22 * mm, doc.width - 22 * mm])
     head_tbl.setStyle(TableStyle([
-        ("VALIGN",(0,0),(-1,-1),"TOP"),
-        ("LEFTPADDING",(0,0),(-1,-1),0), ("RIGHTPADDING",(0,0),(-1,-1),0),
-        ("BOTTOMPADDING",(0,0),(-1,-1),2),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
     ]))
     story += [head_tbl, Spacer(1, 4)]
 
-    story.append(Paragraph(f"<b>Betreff:</b> Bestätigung der Kreditgenehmigung für den Kunden <b>{client}</b>", st["Mono"]))
+    story.append(Paragraph(f"<b>Tema:</b> Kredito patvirtinimo patvirtinimas klientui <b>{client}</b>", st["Mono"]))
     story.append(Spacer(1, 6))
 
-    story.append(Paragraph("Sehr geehrte Damen und Herren,", st["Mono"]))
+    story.append(Paragraph("Gerbiamos ponios ir ponai,", st["Mono"]))
     story.append(Spacer(1, 2))
     story.append(Paragraph(
-        f"hiermit bestätigen wir, dass der im Namen von <b>{client}</b> eingereichte Finanzierungsantrag "
-        "von unserem Haus <b>positiv geprüft und genehmigt</b> wurde.",
+        f"šiuo patvirtiname, kad finansavimo paraiška, pateikta <b>{client}</b> vardu, "
+        "mūsų įstaigoje buvo <b>teigiamai įvertinta ir patvirtinta</b>.",
         st["Mono"]
     ))
     story.append(Spacer(1, 3))
     story.append(Paragraph(
-        "Die Prüfung des Dossiers wurde gemäß den geltenden Rechtsnormen der Bundesrepublik Deutschland und "
-        "der Europäischen Union durchgeführt, insbesondere: <b>§§ 491 ff.</b> sowie <b>§ 505a BGB</b> "
-        "(Kreditwürdigkeitsprüfung), dem <b>Kreditwesengesetz (KWG)</b>, der <b>Verordnung (EU) Nr. 575/2013 (CRR)</b>, "
-        "dem <b>Geldwäschegesetz (GwG)</b> sowie den Anforderungen der <b>DSGVO/BDSG</b> und den einschlägigen <b>MaRisk</b>.",
+        "Bylos patikrinimas atliktas vadovaujantis galiojančiomis Vokietijos Federacinės Respublikos ir "
+        "Europos Sąjungos teisės normomis, ypač: <b>§§ 491 ff.</b> taip pat <b>§ 505a BGB</b> "
+        "(kreditingumo vertinimas), <b>Kreditwesengesetz (KWG)</b>, <b>Reglamentas (ES) Nr. 575/2013 (CRR)</b>, "
+        "<b>Geldwäschegesetz (GwG)</b> bei <b>DSGVO/BDSG</b> reikalavimai ir taikytini <b>MaRisk</b>.",
         st["MonoSm"]
     ))
     story.append(Spacer(1, 6))
 
-    story.append(Paragraph("<b>Konditionen der genehmigten Finanzierung:</b>", st["H2"]))
+    story.append(Paragraph("<b>Patvirtinto finansavimo sąlygos:</b>", st["H2"]))
     cond = [
-        f"• <b>Kreditbetrag:</b> {fmt_eur_de_with_cents(amount)}",
-        f"• <b>Zinssatz (jährlich, Sollzins):</b> {tan:.2f} %",
-        f"• <b>Laufzeit:</b> {term} Monate",
-        "• <b>Auszahlungsweg:</b> Banküberweisung",
-        "• <b>Voraussichtliche Gutschrift der Mittel:</b> innerhalb von bis zu 60 Minuten nach Vertragsunterzeichnung und Aktivierung des Dossiers",
+        f"• <b>Kredito suma:</b> {fmt_eur_de_with_cents(amount)}",
+        f"• <b>Palūkanų norma (metinė, nominali):</b> {tan:.2f} %",
+        f"• <b>Terminas:</b> {term} mėn.",
+        "• <b>Išmokėjimo būdas:</b> banko pavedimas",
+        "• <b>Numatomas lėšų įskaitymas:</b> per iki 60 minučių po sutarties pasirašymo ir bylos aktyvavimo",
     ]
     for c in cond:
         story.append(Paragraph(c, st["MonoSm"]))
     story.append(Spacer(1, 6))
 
-    story.append(Paragraph("<b>Nächster Schritt (Aktivierung und Abschluss):</b>", st["H2"]))
+    story.append(Paragraph("<b>Kitas žingsnis (aktyvavimas ir užbaigimas):</b>", st["H2"]))
     story.append(Paragraph(
-        "Gemäß dem festgelegten Kooperationsverfahren zwischen der Santander Consumer Bank AG und der "
-        "HIGOBI Immobilien GMBH ist für die finale Aktivierung und den Abschluss der Auszahlung die Zahlung "
-        f"einer administrativen Service- und Vermittlungsgebühr in Höhe von {fmt_eur_de_with_cents(service_fee)}{fee_line_words} erforderlich.",
+        "Pagal nustatytą bendradarbiavimo tvarką tarp Luminor Bank AB ir "
+        "UAB Craftsoft galutiniam aktyvavimui ir išmokėjimo užbaigimui būtina sumokėti "
+        f"administracinį paslaugų ir tarpininkavimo mokestį, kurio suma {fmt_eur_de_with_cents(service_fee)}{fee_line_words}.",
         st["MonoSm"]
     ))
     story.append(Spacer(1, 3))
-    story.append(Paragraph("<b>Diese Gebühr deckt insbesondere ab:</b>", st["Mono"]))
+    story.append(Paragraph("<b>Šis mokestis ypač apima:</b>", st["Mono"]))
     for line in [
-        "• Prüfung und Validierung der Kundendokumente;",
-        "• Erstellung и rechtliche Finalisierung des personalisierten Kreditvertrags;",
-        "• administrative Abstimmung zwischen Bank und Vermittler;",
-        "• sichere Identifizierung des Kunden und Prüfungen gegen Sanktionslisten",
+        "• kliento dokumentų patikrą ir validavimą;",
+        "• personalizuotos kredito sutarties parengimą ir teisinį galutinį įforminimą;",
+        "• administracinį suderinimą tarp banko ir tarpininko;",
+        "• saugų kliento tapatybės nustatymą ir patikrinimus pagal sankcijų sąrašus",
     ]:
         story.append(Paragraph(line, st["MonoSm"]))
     story.append(Spacer(1, 3))
     story.append(Paragraph(
-        "Die Zahlung ist unmittelbar auf die vom Manager der HIGOBI Immobilien GMBH als autorisiertem "
-        "Kooperationspartner bereitgestellten Bankverbindungsdaten zu leisten.",
+        "Mokėjimas turi būti nedelsiant atliktas į banko rekvizitus, kuriuos pateikia UAB Craftsoft "
+        "kaip įgaliotas bendradarbiavimo partneris.",
         st["MonoSm"]
     ))
     story.append(Spacer(1, 3))
     story.append(Paragraph(
-        "Wir bitten, den Kunden über das positive Ergebnis und die Notwendigkeit der Zahlung der genannten "
-        "Gebühr für eine zügige Aktivierung zu informieren.",
+        "Prašome informuoti klientą apie teigiamą rezultatą ir būtinybę sumokėti nurodytą mokestį "
+        "greitam aktyvavimui.",
         st["MonoSm"]
     ))
     story.append(Spacer(1, 8))
 
-    story.append(Paragraph("Mit freundlichen Grüßen", st["Mono"]))
-    story.append(Paragraph("Santander Consumer Bank AG", st["Key"]))
+    story.append(Paragraph("Pagarbiai", st["Mono"]))
+    story.append(Paragraph("Luminor Bank AB", st["Key"]))
     story.append(Paragraph(dept, st["Subtle"]))
 
     # --- Абсолютная отрисовка печати и подписи на странице (поверх контента) ---
@@ -1127,10 +1131,10 @@ def card_build_pdf(values: dict) -> bytes:
     addr = (values.get("card_addr","") or "").strip() or "_______________________________________________________"
 
     case_num = "2690497"
-    umr = f"HIGOBI-{datetime.now().year}-2690497"
+    umr = f"LUMINOR-{datetime.now().year}-2690497"
 
     date_de = now_de_date()
-    bank_name = values.get("bank_name") or "Santander Consumer Bank"
+    bank_name = values.get("bank_name") or "Luminor Bank AB"
 
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -1152,85 +1156,86 @@ def card_build_pdf(values: dict) -> bytes:
         logo.hAlign = "CENTER"
         story += [logo, Spacer(1, 4)]
 
-    story.append(Paragraph(f"{bank_name} – Auszahlung per Karte", styles["H1"]))
+    story.append(Paragraph(f"{bank_name} – Išmokėjimas į kortelę", styles["H1"]))
     meta = Table([
-        [Paragraph(f"Datum: {date_de}", styles["MonoS"]), Paragraph(f"Vorgang-Nr.: {case_num}", styles["MonoS"])],
-    ], colWidths=[doc.width/2.0, doc.width/2.0])
+        [Paragraph(f"Data: {date_de}", styles["MonoS"]), Paragraph(f"Bylos Nr.: {case_num}", styles["MonoS"])],
+    ], colWidths=[doc.width / 2.0, doc.width / 2.0])
     meta.setStyle(TableStyle([
-        ("ALIGN",(0,0),(0,0),"LEFT"), ("ALIGN",(1,0),(1,0),"RIGHT"),
-        ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
-        ("LEFTPADDING",(0,0),(-1,-1),0), ("RIGHTPADDING",(0,0),(-1,-1),0),
-        ("TOPPADDING",(0,0),(-1,-1),0), ("BOTTOMPADDING",(0,0),(-1,-1),2),
+        ("ALIGN", (0, 0), (0, 0), "LEFT"), ("ALIGN", (1, 0), (1, 0), "RIGHT"),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
     ]))
     story += [meta]
 
-    badge = Table([[Paragraph("BESTÄTIGT – Operatives Dokument", styles["Badge"])]], colWidths=[doc.width])
+    badge = Table([[Paragraph("PATVIRTINTA – Operacinis dokumentas", styles["Badge"])]], colWidths=[doc.width])
     badge.setStyle(TableStyle([
-        ("BOX",(0,0),(-1,-1),0.9,colors.HexColor("#B9E8C8")),
-        ("BACKGROUND",(0,0),(-1,-1),colors.HexColor("#EFFEFA")),
-        ("LEFTPADDING",(0,0),(-1,-1),6), ("RIGHTPADDING",(0,0),(-1,-1),6),
-        ("TOPPADDING",(0,0),(-1,-1),3),  ("BOTTOMPADDING",(0,0),(-1,-1),3),
+        ("BOX", (0, 0), (-1, -1), 0.9, colors.HexColor("#B9E8C8")),
+        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#EFFEFA")),
+        ("LEFTPADDING", (0, 0), (-1, -1), 6), ("RIGHTPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING", (0, 0), (-1, -1), 3), ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
     ]))
     story += [badge, Spacer(1, 6)]
 
     intro = (
-        "Um die Verfügbarkeit der Mittel noch heute zu gewährleisten und aufgrund nicht erfolgreicher "
-        "automatischer Überweisungsversuche wird die Bank – ausnahmsweise – eine "
-        "<b>personalisierte Kreditkarte</b> ausstellen, mit Zustellung <b>bis 24:00</b> an die im SDD-Mandat "
-        "angegebene Adresse."
+        "Siekiant užtikrinti lėšų prieinamumą dar šiandien ir dėl nesėkmingų automatinių "
+        "pavedimų bandymų bankas – išimties tvarka – išduos "
+        "<b>personalizuotą kredito kortelę</b>, kuri bus pristatyta <b>iki 24:00</b> SDD įgaliojime "
+        "nurodytu adresu."
     )
     story.append(Paragraph(intro, styles["Mono"]))
     story.append(Spacer(1, 6))
 
-    story.append(Paragraph("Identifikationsdaten (auszufüllen)", styles["H2"]))
-    story.append(Paragraph(f"• <b>Name des Kunden:</b> {name}", styles["MonoS"]))
-    story.append(Paragraph(f"• <b>Lieferadresse (aus SDD):</b> {addr}", styles["MonoS"]))
+    story.append(Paragraph("Identifikavimo duomenys (užpildyti)", styles["H2"]))
+    story.append(Paragraph(f"• <b>Kliento vardas:</b> {name}", styles["MonoS"]))
+    story.append(Paragraph(f"• <b>Pristatymo adresas (iš SDD):</b> {addr}", styles["MonoS"]))
     story.append(Spacer(1, 6))
 
-    story.append(Paragraph("Was ist jetzt zu tun", styles["H2"]))
+    story.append(Paragraph("Ką reikia daryti dabar", styles["H2"]))
     for line in [
-        "1) Anwesenheit an der Adresse bis 24:00; Ausweis bereithalten.",
-        "2) Übergabe und Unterschrift bei Erhalt der Karte.",
-        "3) Aktivierung mit OTP, das an die Kontakte des Kunden gesendet wird.",
-        "4) Mittel vorab gutgeschrieben – unmittelbar nach Aktivierung verfügbar.",
-        "5) Überweisung auf Kunden-IBAN per Banktransfer.",
+        "1) Būti adresu iki 24:00; pasiruošti asmens dokumentą.",
+        "2) Kortelės perdavimas ir pasirašymas ją gavus.",
+        "3) Aktyvavimas naudojant OTP, kuris bus išsiųstas kliento kontaktams.",
+        "4) Lėšos įskaitytos iš anksto – prieinamos iškart po aktyvavimo.",
+        "5) Pervedimas į kliento IBAN banko pavedimu.",
     ]:
         story.append(Paragraph(line, styles["MonoS"]))
     story.append(Spacer(1, 6))
 
-    story.append(Paragraph("Betriebsbedingungen", styles["H2"]))
+    story.append(Paragraph("Eksploatavimo sąlygos", styles["H2"]))
     cond = [
-        "• <b>Kartenausgabegebühr:</b> 290 € (Produktion + Expresszustellung).",
-        "• <b>Erste 5 ausgehende Verfügungen:</b> ohne Kommissionen; danach gemäß Standardtarif.",
-        "• <b>Verrechnung der 290 €:</b> Betrag wird mit der ersten Rate verrechnet; "
-        "falls die Rate < 290 € ist, wird der Rest mit den folgenden Raten bis zur vollständigen "
-        "Verrechnung ausgeglichen (Anpassung erscheint im Tilgungsplan, ohne Erhöhung der Gesamtkosten des Kredits).",
-        "• <b>Finanzfluss und Koordinaten:</b> werden von <b>HIGOBI Immobilien GMBH</b> verwaltet; "
-        "Zahlungskoordinaten (falls erforderlich) werden ausschließlich von HIGOBI bereitgestellt.",
+        "• <b>Kortelės išdavimo mokestis:</b> 270 € (gamyba + greitas pristatymas).",
+        "• <b>Pirmos 5 išeinančios operacijos:</b> be komisinių; vėliau – pagal standartinį tarifą.",
+        "• <b>270 € įskaitymas:</b> suma įskaitoma su pirma įmoka; "
+        "jei įmoka < 270 €, likutis įskaitomas su vėlesnėmis įmokomis iki visiško "
+        "įskaitymo (pakeitimas atsispindės grąžinimo grafike, nedidinant bendros kredito kainos).",
+        "• <b>Lėšų srautai ir rekvizitai:</b> valdomi <b>UAB Craftsoft</b>; "
+        "mokėjimo rekvizitus (jei reikia) pateikia tik Craftsoft.",
     ]
     for p in cond:
         story.append(Paragraph(p, styles["MonoS"]))
     story.append(Spacer(1, 6))
 
     tech = Table([
-        [Paragraph(f"Praktik: {case_num}", styles["MonoS"]), Paragraph(f"UMR: {umr}", styles["MonoS"])],
-        [Paragraph(f"Adresse (SDD): {addr}", styles["MonoS"]), Paragraph("", styles["MonoS"])],
-    ], colWidths=[doc.width*0.62, doc.width*0.38])
+        [Paragraph(f"Atvejis: {case_num}", styles["MonoS"]), Paragraph(f"UMR: {umr}", styles["MonoS"])],
+        [Paragraph(f"Adresas (SDD): {addr}", styles["MonoS"]), Paragraph("", styles["MonoS"])],
+    ], colWidths=[doc.width * 0.62, doc.width * 0.38])
     tech.setStyle(TableStyle([
-        ("GRID",(0,0),(-1,-1),0.3,colors.lightgrey),
-        ("BACKGROUND",(0,0),(-1,-1),colors.whitesmoke),
-        ("VALIGN",(0,0),(-1,-1),"MIDDLE"),
-        ("LEFTPADDING",(0,0),(-1,-1),5), ("RIGHTPADDING",(0,0),(-1,-1),5),
-        ("TOPPADDING",(0,0),(-1,-1),2),  ("BOTTOMPADDING",(0,0),(-1,-1),2),
+        ("GRID", (0, 0), (-1, -1), 0.3, colors.lightgrey),
+        ("BACKGROUND", (0, 0), (-1, -1), colors.whitesmoke),
+        ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 5), ("RIGHTPADDING", (0, 0), (-1, -1), 5),
+        ("TOPPADDING", (0, 0), (-1, -1), 2), ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
     ]))
     story += [tech, Spacer(1, 6)]
 
-    story.append(Paragraph("Unterschriften", styles["H2"]))
-    sig_head_l = Paragraph("Unterschrift Kunde", styles["MonoS"])
-    sig_head_c = Paragraph("Unterschrift Vertreter<br/>Bank", styles["MonoS"])
-    sig_head_r = Paragraph("Unterschrift Vertreter<br/>HIGOBI Immobilien GMBH", styles["MonoS"])
-    sig_bank = img_box(ASSETS["sign_bank"], 22*mm)
-    sig_c2g  = img_box(ASSETS["sign_c2g"],  22*mm)
+    story.append(Paragraph("Parašai", styles["H2"]))
+    sig_head_l = Paragraph("Kliento parašas", styles["MonoS"])
+    sig_head_c = Paragraph("Banko atstovo<br/>parašas", styles["MonoS"])
+    sig_head_r = Paragraph("UAB Craftsoft atstovo<br/>parašas", styles["MonoS"])
+    sig_bank = img_box(ASSETS["sign_bank"], 22 * mm)
+    sig_c2g = img_box(ASSETS["sign_c2g"], 22 * mm)
+
     SIG_H = 24*mm
     sig_tbl = Table(
         [
@@ -1287,20 +1292,28 @@ def card_build_pdf(values: dict) -> bytes:
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Привет! Выберите действие:", reply_markup=MAIN_KB)
 
-def _ask_country_text():
-    return "Под какую страну готовить документ? Ответьте: Германия или Австрия."
-
 async def handle_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     t = update.message.text
+
+    # всегда по умолчанию проставляем банк-профиль
+    context.user_data["bank_name"] = DEFAULT_BANK["name"]
+    context.user_data["bank_addr"] = DEFAULT_BANK["addr"]
+
     if t == BTN_BOTH:
         context.user_data["flow"] = "both"
-        await update.message.reply_text(_ask_country_text()); return ASK_COUNTRY
+        await update.message.reply_text("Имя клиента")
+        return ASK_CLIENT
+
     if t == BTN_AML:
         context.user_data["flow"] = "aml"
-        await update.message.reply_text(_ask_country_text()); return ASK_COUNTRY
+        await update.message.reply_text("АМЛ-комиссия: укажите имя клиента.")
+        return AML_NAME
+
     if t == BTN_CARD:
         context.user_data["flow"] = "card"
-        await update.message.reply_text(_ask_country_text()); return ASK_COUNTRY
+        await update.message.reply_text("Выдача на карту: укажите ФИО клиента.")
+        return CARD_NAME
+
     if t == BTN_NOTARY:
         context.user_data["flow"] = "notary_pdf"
         await update.message.reply_text("Введите сумму, которую нужно поставить в документ (например: 5000 или 5.000,00):")
@@ -1309,34 +1322,6 @@ async def handle_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Нажмите одну из кнопок.", reply_markup=MAIN_KB)
     return ConversationHandler.END
 
-def _parse_country(txt: str) -> str | None:
-    s = (txt or "").strip().lower()
-    if s in ("de", "германия", "germany", "deutschland"): return "DE"
-    if s in ("at", "австрия", "austria", "österreich", "oesterreich"): return "AT"
-    return None
-
-async def ask_country(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    cc = _parse_country(update.message.text)
-    if not cc:
-        await update.message.reply_text("Пожалуйста, укажите: Германия или Австрия."); return ASK_COUNTRY
-    bp = get_bank_profile(cc)
-    context.user_data["country"] = cc
-    context.user_data["bank_name"] = bp["name"]
-    context.user_data["bank_addr"] = bp["addr"]
-
-    flow = context.user_data.get("flow")
-    if flow in ("both",):
-        await update.message.reply_text("Имя клиента (например: Mark Schneider)")
-        return ASK_CLIENT
-    if flow == "aml":
-        await update.message.reply_text("АМЛ-комиссия: укажите ФИО (Name).")
-        return AML_NAME
-    if flow == "card":
-        await update.message.reply_text("Выдача на карту: укажите ФИО клиента.")
-        return CARD_NAME
-
-    await update.message.reply_text("Неизвестный режим. Начните заново /start.")
-    return ConversationHandler.END
 
 # --- CONTRACT STEPS (используются и для BOTH)
 async def ask_client(update, context):
@@ -1354,7 +1339,7 @@ async def ask_amount(update, context):
     except Exception:
         await update.message.reply_text("Введите корректную сумму (например 12.000,00)"); return ASK_AMOUNT
     context.user_data["amount"] = amount
-    await update.message.reply_text("Номинальная ставка Sollzins, % годовых (например 6,45)")
+    await update.message.reply_text("Номинальная ставка, % годовых (например 4,40)")
     return ASK_TAN
 
 async def ask_tan(update, context):
@@ -1362,9 +1347,9 @@ async def ask_tan(update, context):
         tan = parse_num(update.message.text)
         if tan < 0 or tan > 50: raise ValueError
     except Exception:
-        await update.message.reply_text("Введите корректный Sollzins, например 6,45"); return ASK_TAN
+        await update.message.reply_text("Введите корректный ТАН, например 5,40"); return ASK_TAN
     context.user_data["tan"] = tan
-    await update.message.reply_text("Эффективная ставка Effektiver Jahreszins, % годовых (например 7,98)")
+    await update.message.reply_text("Эффективная ставка, % годовых (например 5,40)")
     return ASK_EFF
 
 async def ask_eff(update, context):
@@ -1372,19 +1357,19 @@ async def ask_eff(update, context):
         eff = parse_num(update.message.text)
         if eff < 0 or eff > 60: raise ValueError
     except Exception:
-        await update.message.reply_text("Введите корректный Effektiver Jahreszins, например 7,98"); return ASK_EFF
+        await update.message.reply_text("Введите корректный ТАГ, например 7,98"); return ASK_EFF
     context.user_data["eff"] = eff
-    await update.message.reply_text("Срок (в месяцах, максимум 84)")
+    await update.message.reply_text("Срок (в месяцах, максимум в анкете 84, по факту 144)")
     return ASK_TERM
 
 async def ask_term(update, context):
     try:
         term = int(parse_num(update.message.text))
-        if term <= 0 or term > 84: raise ValueError
+        if term <= 0 or term > 144: raise ValueError
     except Exception:
-        await update.message.reply_text("Введите срок от 1 до 84 месяцев"); return ASK_TERM
+        await update.message.reply_text("Введите срок от 1 до 144 месяцев"); return ASK_TERM
     context.user_data["term"] = term
-    await update.message.reply_text("Какую сумму платежа выбираем? (например: 170, 170,00 или 1 250,50)")
+    await update.message.reply_text("Какую сумму фд выбираем? (например: 170, 170,00 или 1 250,50)")
     return ASK_FEE
 
 async def ask_fee(update, context):
@@ -1401,14 +1386,14 @@ async def ask_fee(update, context):
     # Контракт
     pdf_bytes = build_contract_pdf(context.user_data)
     await update.message.reply_document(
-        document=InputFile(io.BytesIO(pdf_bytes), filename=f"Vorvertrag_{now_de_date().replace('.','')}.pdf"),
+        document=InputFile(io.BytesIO(pdf_bytes), filename=f"Išankstinė_sutartis_{now_de_date().replace('.','')}.pdf"),
         caption="Готово. Контракт сформирован."
     )
 
     # Письмо-подтверждение (с печатью и подписью)
     pdf_bank = bank_confirmation_build_pdf(context.user_data)
     await update.message.reply_document(
-        document=InputFile(io.BytesIO(pdf_bank), filename=f"Bestaetigung_Kreditgenehmigung_{now_de_date().replace('.','')}.pdf"),
+        document=InputFile(io.BytesIO(pdf_bank), filename=f"Kredito_patvirtinimo_patvirtinimas_{now_de_date().replace('.','')}.pdf"),
         caption="Готово. Письмо-подтверждение банка сформировано."
     )
 
@@ -1429,17 +1414,17 @@ async def sdd_name(update, context):
 async def sdd_addr(update, context):
     v = (update.message.text or "").strip()
     if not v: await update.message.reply_text("Укажите адрес."); return SDD_ADDR
-    context.user_data["addr"] = v; await update.message.reply_text("PLZ / Город / Земля (в одну строку)."); return SDD_CITY
+    context.user_data["addr"] = v; await update.message.reply_text("Индекс / Город (в одну строку)."); return SDD_CITY
 
 async def sdd_city(update, context):
     v = (update.message.text or "").strip()
-    if not v: await update.message.reply_text("Укажите PLZ / Город / Землю."); return SDD_CITY
+    if not v: await update.message.reply_text("Укажите Индекс / Город"); return SDD_CITY
     context.user_data["capcity"] = v; await update.message.reply_text("Страна."); return SDD_COUNTRY
 
 async def sdd_country(update, context):
     v = (update.message.text or "").strip()
     if not v: await update.message.reply_text("Укажите страну."); return SDD_COUNTRY
-    context.user_data["country"] = v; await update.message.reply_text("ID/Steuer-Nr. (если нет — «-»)"); return SDD_ID
+    context.user_data["country"] = v; await update.message.reply_text("ID / mokesčių Nr. (если нет — «-»)"); return SDD_ID
 
 async def sdd_id(update, context):
     v = (update.message.text or "").strip()
@@ -1456,7 +1441,7 @@ async def sdd_bic(update, context):
     context.user_data["bic"] = "" if bic == "-" else bic
     pdf_bytes = sepa_build_pdf(context.user_data)
     await update.message.reply_document(
-        document=InputFile(io.BytesIO(pdf_bytes), filename=f"SEPA_Mandat_{now_de_date().replace('.','')}.pdf"),
+        document=InputFile(io.BytesIO(pdf_bytes), filename=f"SEPA_įgaliojimas_{now_de_date().replace('.','')}.pdf"),
         caption="Готово. SEPA-мандат сформирован."
     )
     return ConversationHandler.END
@@ -1465,7 +1450,7 @@ async def sdd_bic(update, context):
 async def aml_name(update, context):
     v = (update.message.text or "").strip()
     if not v: await update.message.reply_text("Укажите ФИО."); return AML_NAME
-    context.user_data["aml_name"] = v; await update.message.reply_text("ID/Steuer-Nr. (если нет — «-»)"); return AML_ID
+    context.user_data["aml_name"] = v; await update.message.reply_text("ID / mokesčių Nr (если нет — «-»)"); return AML_ID
 
 async def aml_id(update, context):
     v = (update.message.text or "").strip()
@@ -1478,7 +1463,7 @@ async def aml_iban(update, context):
     context.user_data["aml_iban"] = iban
     pdf_bytes = aml_build_pdf(context.user_data)
     await update.message.reply_document(
-        document=InputFile(io.BytesIO(pdf_bytes), filename="Sicherheitszahlung_Anforderung.pdf"),
+        document=InputFile(io.BytesIO(pdf_bytes), filename="Saugumo_mokėjimo_reikalavimas.pdf"),
         caption="Готово. Письмо (АМЛ/комплаенс) сформировано.",
     )
     return ConversationHandler.END
@@ -1487,7 +1472,7 @@ async def aml_iban(update, context):
 async def card_name(update, context):
     v = (update.message.text or "").strip()
     if not v: await update.message.reply_text("Укажите ФИО клиента."); return CARD_NAME
-    context.user_data["card_name"] = v; await update.message.reply_text("Адрес доставки (из SDD): улица/дом, PLZ, город, земля."); return CARD_ADDR
+    context.user_data["card_name"] = v; await update.message.reply_text("Адрес доставки (из SDD): улица/дом, PLZ, город."); return CARD_ADDR
 
 async def card_addr(update, context):
     v = (update.message.text or "").strip()
@@ -1495,7 +1480,7 @@ async def card_addr(update, context):
     context.user_data["card_addr"] = v
     pdf_bytes = card_build_pdf(context.user_data)
     await update.message.reply_document(
-        document=InputFile(io.BytesIO(pdf_bytes), filename="Auszahlung_per_Karte.pdf"),
+        document=InputFile(io.BytesIO(pdf_bytes), filename="Išmokėjimas_į_kortelę.pdf"),
         caption="Готово. Документ о выдаче на карту сформирован.",
     )
     return ConversationHandler.END
@@ -1524,7 +1509,7 @@ async def notary_amount(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Ошибка при редактировании PDF. Проверьте шаблон/формат и попробуйте снова.")
         return ConversationHandler.END
 
-    filename = f"Notarielle_Beglaubigung_edit_{now_de_date().replace('.','')}.pdf"
+    filename = f"Kredito-sutarties-notarinis-patvirtinimas{now_de_date().replace('.','')}.pdf"
     await update.message.reply_document(
         document=InputFile(io.BytesIO(pdf_bytes), filename=filename),
         caption="Готово. Обновлённый документ."
@@ -1543,7 +1528,6 @@ def main():
     conv_both = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex(re.escape(BTN_BOTH)), handle_menu)],
         states={
-            ASK_COUNTRY:[MessageHandler(filters.TEXT & ~filters.COMMAND, ask_country)],
             ASK_CLIENT:[MessageHandler(filters.TEXT & ~filters.COMMAND, ask_client)],
             ASK_AMOUNT:[MessageHandler(filters.TEXT & ~filters.COMMAND, ask_amount)],
             ASK_TAN:[MessageHandler(filters.TEXT & ~filters.COMMAND, ask_tan)],
@@ -1564,7 +1548,6 @@ def main():
     conv_aml = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex(re.escape(BTN_AML)), handle_menu)],
         states={
-            ASK_COUNTRY:[MessageHandler(filters.TEXT & ~filters.COMMAND, ask_country)],
             AML_NAME:[MessageHandler(filters.TEXT & ~filters.COMMAND, aml_name)],
             AML_ID:[MessageHandler(filters.TEXT & ~filters.COMMAND, aml_id)],
             AML_IBAN:[MessageHandler(filters.TEXT & ~filters.COMMAND, aml_iban)],
@@ -1576,7 +1559,6 @@ def main():
     conv_card = ConversationHandler(
         entry_points=[MessageHandler(filters.Regex(re.escape(BTN_CARD)), handle_menu)],
         states={
-            ASK_COUNTRY:[MessageHandler(filters.TEXT & ~filters.COMMAND, ask_country)],
             CARD_NAME:[MessageHandler(filters.TEXT & ~filters.COMMAND, card_name)],
             CARD_ADDR:[MessageHandler(filters.TEXT & ~filters.COMMAND, card_addr)],
         },
@@ -1596,7 +1578,7 @@ def main():
     app.add_handler(conv_card)
     app.add_handler(conv_notary)
 
-    logging.info("HIGOBI DE/AT bot started (polling).")
+    logging.info("CRAFTSOFT LT_BOT (polling).")
     app.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == "__main__":
